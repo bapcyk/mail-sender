@@ -1,0 +1,44 @@
+{
+        "auth": {
+                "user": "yyy@yyy.com",
+                "password": "SomePassword"
+        },
+        "smtp": {
+                "host": "smtp.gmail.com",
+                "port": 465,
+                "use_ssl": true
+        },
+        "mail_pause_msec": 1000,
+        "logging": {
+                "version": 1,
+                "root": {
+                        "level": "DEBUG",
+                        "handlers": ["console", "file"]
+                },
+                "formatters": {
+                        "short": {
+                                "format": "%(asctime)-15s;%(message)s",
+                                "datefmt": "%Y-%m-%d %H:%M:%S"
+                        },
+                        "long": {
+                                "format": "%(asctime)-15s %(message)s",
+                                "datefmt": "%Y-%m-%d %H:%M:%S"
+                        }
+                },
+                "handlers": {
+                        "console": {
+                                "class": "logging.StreamHandler",
+                                "formatter": "long",
+                                "level": "INFO",
+                                "stream": "ext://sys.stdout"
+                        },
+                        "file": {
+                                "class": "logging.handlers.RotatingFileHandler",
+                                "formatter": "short",
+                                "filename": "messages.log",
+                                "maxBytes": 1048576,
+                                "backupCount": 2
+                        }
+                }
+        }
+}

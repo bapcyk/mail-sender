@@ -212,7 +212,7 @@ class Job:
             self.redolog_file = open(p, 'a+', encoding='utf-8')
             self.redolog_file.seek(0, os.SEEK_SET)
             buf = self.redolog_file.read()
-            self.redolog = [s for s in (s.rstrip() for s in buf.splitlines()) if s]
+            self.redolog = set(s for s in (s.rstrip() for s in buf.splitlines()) if s)
             logger.info('Loaded redolog: %d recipients will be skipped' % len(self.redolog))
             # now file pointer is at the end, we are ready to append
         except Exception as x:

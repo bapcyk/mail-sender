@@ -1,0 +1,34 @@
+Naming
+======
+
+<PRJ><PKT>_METH()
+
+xyzbytearray_fload()
+xyzbits_sendto()
+
+    or
+
+<PRJ>_<PKT>_METH()
+
+xyz_bytearray_loadfromfile()
+xyz_bits_sendto()
+
+Also is possible standard C (verbal) kind:
+
+xyz_floadbytearray() or xyz_fload_bytearray()
+xyz_sendbitsto() or xyz_send_bits_to()
+
+Modules
+=======
+
+<PRJ>_<MODULE>
+
+Packages should be in sub-folders.
+
+Standard modules
+================
+
+'types.h' - ALL typedefs.
+'globals.h' - all global variables (or in it's modules)
+'errors.h' - all errors codes, code->str...
+'config.h' - general (global) application compile-time config
