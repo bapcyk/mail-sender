@@ -60,9 +60,9 @@ class MailData:
         self.name = os.path.basename(path)
         self.job = job
         self.text_data = MailText(self.path)
-        self.load_variables()
         self.load_email()
         self.load_attachments()
+        self.load_variables()
         self.subject = self.get_subject()
         self.body_text = self.get_body_text()
         self.body_html = self.get_body_html()
@@ -96,20 +96,24 @@ class MailData:
         self.email = email
 
     def auto_variables(self):
-        d = {'email': self.email, 'recipient_dir': self.name, 'subject': self.subject}
+        assert all((self.email, self.name))
+        d = {'email': self.email, 'recipient_dir': self.name}
         return d
 
     def get_body_text(self):
         """Returns individual or common, if individual is missing"""
-        return self.text_data.body_text or self.job.subst_body_text_template(self.variables)
+        assert self.variables
+        return chevron.render(self.text_data.body_text or self.job.templates.body_text, self.variables)
 
     def get_body_html(self):
         """Returns individual or common, if individual is missing"""
-        return self.text_data.body_html or self.job.subst_body_html_template(self.variables)
+        assert self.variables
+        return chevron.render(self.text_data.body_html or self.job.templates.body_html, self.variables)
 
     def get_subject(self):
         """Returns individual or common, if individual is missing"""
-        return self.text_data.subject or self.job.subst_subject_template(self.variables)
+        assert self.variables
+        return chevron.render(self.text_data.subject or self.job.templates.subject, self.variables)
 
 
 ####################################################################################################
@@ -171,7 +175,7 @@ class Job:
             except Exception:
                 logger.exception('Failure for %s recipient' % md.name)
             else:
-                logger.info('Sent email for %s recipient' % md.name)
+                logger.info("Sent email for '%s' recipient" % md.name)
                 self.commit_in_redolog(md.path)
                 nsent += 1
             # TODO if -1 then in parallel
@@ -190,7 +194,7 @@ class Job:
         self.maildata = []
         for p in os.scandir(self.path):
             if p.is_dir() and p.name != 'attachments':
-                logger.info('Loading info about recipient %s ...' % p.name)
+                logger.info("Loading info about recipient '%s' ..." % p.name)
                 md = MailData(p.path, self)
                 md.attachments.merge(self.attachments)
                 self.maildata.append(md)
@@ -235,11 +239,11 @@ class Job:
         v.update(self.auto_variables())
         return v
 
-    def subst_subject_template(self, variables):
-        return chevron.render(self.templates.subject, variables)
+    # def subst_subject_template(self, variables):
+        # return chevron.render(self.templates.subject, variables)
 
-    def subst_body_text_template(self, variables):
-        return chevron.render(self.templates.body_text, variables)
+    # def subst_body_text_template(self, variables):
+        # return chevron.render(self.templates.body_text, variables)
 
-    def subst_body_html_template(self, variables):
-        return chevron.render(self.templates.body_html, variables)
+    # def subst_body_html_template(self, variables):
+        # return chevron.render(self.templates.body_html, variables)
